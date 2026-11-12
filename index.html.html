@@ -1,0 +1,2702 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Penjelajah At-Tin: Buah Kejujuran & Akhlak Mulia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Fredoka:wght@500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #132a1c;
+      --panel-wood: #5c3a21;
+      --panel-wood-dark: #3b2313;
+      --parchment: #fdf6e3;
+      --parchment-border: #c9a66b;
+      --emerald: #1b7a43;
+      --emerald-light: #2ca85e;
+      --gold: #f4b41a;
+      --gold-light: #ffe07d;
+      --text-dark: #2c1e12;
+      --crimson: #c0392b;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top, #1f4d32 0%, #0d1f14 100%);
+      font-family: 'Fredoka', sans-serif;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    /* Main Game Container */
+    #app-shell {
+      width: 100%;
+      max-width: 960px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Top HUD */
+    #top-hud {
+      background: linear-gradient(180deg, #6e4526 0%, #4b2d17 100%);
+      border: 3px solid var(--gold);
+      border-radius: 14px;
+      padding: 8px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    }
+
+    .hud-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #235937;
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.4);
+    }
+
+    .hud-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .hud-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--gold-light);
+    }
+
+    .level-pill {
+      background: var(--emerald);
+      border: 1px solid var(--gold);
+      color: #fff;
+      font-size: 11px;
+      padding: 1px 8px;
+      border-radius: 99px;
+    }
+
+    .xp-bar-wrap {
+      width: 165px;
+      height: 12px;
+      background: #24150a;
+      border-radius: 99px;
+      border: 1.5px solid #c9a66b;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      width: 10%;
+      background: linear-gradient(90deg, #f4b41a, #ffe875);
+      transition: width 0.4s ease;
+    }
+
+    .xp-text {
+      font-size: 11px;
+      color: #f7e6c4;
+    }
+
+    .hud-quest-box {
+      flex: 1;
+      min-width: 220px;
+      background: rgba(20, 12, 6, 0.55);
+      border: 1.5px solid #a8824a;
+      border-radius: 10px;
+      padding: 6px 10px;
+    }
+
+    .hud-quest-label {
+      font-size: 11px;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .hud-quest-desc {
+      font-size: 13px;
+      color: #fff;
+      margin-top: 2px;
+    }
+
+    .hud-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .badges-row {
+      display: flex;
+      gap: 4px;
+      background: rgba(0,0,0,0.35);
+      padding: 4px 8px;
+      border-radius: 10px;
+      border: 1px solid #8a6838;
+    }
+
+    .badge-slot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2a1a0e;
+      border: 1.5px dashed #7a5c32;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      opacity: 0.35;
+      transition: all 0.35s ease;
+      position: relative;
+    }
+
+    .badge-slot.unlocked {
+      opacity: 1;
+      background: radial-gradient(circle, #ffe484, #d69311);
+      border: 1.5px solid #fff;
+      box-shadow: 0 0 10px rgba(244, 180, 26, 0.8);
+      transform: scale(1.06);
+    }
+
+    .btn-hud {
+      background: linear-gradient(180deg, #2ca85e 0%, #1b7a43 100%);
+      color: #fff;
+      border: 2px solid var(--gold-light);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 3px 0 #104d29;
+      transition: transform 0.1s;
+    }
+
+    .btn-hud:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #104d29;
+    }
+
+    .btn-hud.secondary {
+      background: linear-gradient(180deg, #8c5830 0%, #5c3a21 100%);
+      box-shadow: 0 3px 0 #331e0f;
+    }
+
+    /* Viewport / Canvas Wrapper */
+    #viewport-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      max-height: 560px;
+      background: #1a3b26;
+      border: 4px solid var(--gold);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    canvas#gameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      cursor: pointer;
+    }
+
+    /* Zone Banner Toast */
+    #zone-banner {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-80px);
+      background: rgba(44, 30, 18, 0.92);
+      border: 2px solid var(--gold);
+      color: var(--gold-light);
+      padding: 6px 18px;
+      border-radius: 99px;
+      font-weight: 700;
+      font-size: 14px;
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      z-index: 10;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    #zone-banner.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Floating Prompt near bottom of canvas */
+    #interact-hint {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(27, 122, 67, 0.95);
+      border: 2px solid #ffe07d;
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      z-index: 9;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+      animation: bounceHint 1.2s infinite ease-in-out;
+    }
+
+    @keyframes bounceHint {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-4px); }
+    }
+
+    /* Dialogue Box Overlay */
+    #dialogue-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 22, 14, 0.55);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 14px;
+      z-index: 20;
+    }
+
+    .dialogue-card {
+      width: 100%;
+      max-width: 820px;
+      background: var(--parchment);
+      color: var(--text-dark);
+      border: 4px solid #6e4526;
+      outline: 3px solid var(--gold);
+      border-radius: 16px;
+      padding: 14px 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.65);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 92%;
+      overflow-y: auto;
+    }
+
+    .dialogue-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px dashed var(--parchment-border);
+      padding-bottom: 6px;
+      gap: 8px;
+    }
+
+    .speaker-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .speaker-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #e6d5b8;
+      border: 2px solid #8c5830;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .speaker-name {
+      font-weight: 700;
+      font-size: 16px;
+      color: #5c3a21;
+    }
+
+    .speaker-role {
+      font-size: 12px;
+      color: #7d5a3c;
+    }
+
+    .dialogue-text {
+      font-size: 15px;
+      line-height: 1.55;
+      color: #2c1e12;
+      margin: 0;
+    }
+
+    /* Embedded Verse Card inside Dialogue */
+    .verse-embed {
+      background: #f3e7c9;
+      border: 2px solid #c9a66b;
+      border-left: 6px solid var(--emerald);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .verse-arabic {
+      font-family: 'Amiri', serif;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: right;
+      direction: rtl;
+      color: #133b22;
+      line-height: 1.7;
+    }
+
+    .verse-translit {
+      font-size: 12.5px;
+      font-style: italic;
+      color: #6b4c2e;
+    }
+
+    .verse-meaning {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #2c1e12;
+    }
+
+    .audio-controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .btn-audio {
+      background: var(--emerald);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 11px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.2s;
+    }
+
+    .btn-audio:hover {
+      background: var(--emerald-light);
+    }
+
+    .btn-audio.trans {
+      background: #2b6cb0;
+    }
+
+    .btn-audio.trans:hover {
+      background: #3182ce;
+    }
+
+    .btn-audio.combo {
+      background: #b7791f;
+    }
+
+    .btn-audio.combo:hover {
+      background: #d69e2e;
+    }
+
+    .dialogue-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .choice-btn {
+      background: #fff;
+      border: 2px solid #8c5830;
+      border-radius: 10px;
+      padding: 9px 14px;
+      text-align: left;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #2c1e12;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .choice-btn:hover {
+      background: #e9f7ef;
+      border-color: var(--emerald);
+      transform: translateX(4px);
+    }
+
+    .dialogue-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .btn-next {
+      background: linear-gradient(180deg, #2ca85e 0%, #1b7a43 100%);
+      color: #fff;
+      border: 2px solid #134e2b;
+      border-radius: 10px;
+      padding: 8px 18px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Full Screen / Modal Overlays (Title, Mushaf, Quiz Boss, Reflection, Certificate) */
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(12, 28, 18, 0.88);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      z-index: 30;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 760px;
+      max-height: 94%;
+      overflow-y: auto;
+      background: var(--parchment);
+      color: var(--text-dark);
+      border: 4px solid #6e4526;
+      outline: 3px solid var(--gold);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.75);
+    }
+
+    .title-hero {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pixel-subtitle {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: var(--emerald);
+      background: #e3f5ea;
+      border: 1.5px solid var(--emerald);
+      padding: 5px 12px;
+      border-radius: 99px;
+    }
+
+    .game-main-title {
+      font-size: 26px;
+      line-height: 1.2;
+      margin: 0;
+      color: #3b2313;
+      text-shadow: 1px 1px 0 var(--gold-light);
+    }
+
+    .dev-credit-pill {
+      background: #fff3cd;
+      border: 1.5px solid #d69e2e;
+      color: #744210;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 99px;
+    }
+
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .setup-grid { grid-template-columns: 1fr; }
+      .game-main-title { font-size: 20px; }
+    }
+
+    .char-option {
+      border: 3px solid #c9a66b;
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .char-option.selected {
+      border-color: var(--emerald);
+      background: #e8f8ef;
+      box-shadow: 0 0 0 3px rgba(44, 168, 94, 0.25);
+    }
+
+    .char-preview {
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      background: #d7f0e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      border: 2px solid var(--emerald);
+    }
+
+    .student-input-wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      text-align: left;
+    }
+
+    .student-input-wrap label {
+      font-weight: 700;
+      font-size: 14px;
+      color: #5c3a21;
+    }
+
+    .student-input-wrap input, .reflection-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2.5px solid #8c5830;
+      border-radius: 10px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 15px;
+      background: #fff;
+      color: #2c1e12;
+    }
+
+    .btn-start-big {
+      background: linear-gradient(180deg, #f4b41a 0%, #d4900b 100%);
+      color: #2c1e12;
+      border: 3px solid #5c3a21;
+      border-radius: 14px;
+      padding: 12px 28px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #5c3a21;
+      transition: transform 0.1s;
+      margin-top: 6px;
+    }
+
+    .btn-start-big:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #5c3a21;
+    }
+
+    /* Boss Battle UI */
+    .boss-arena {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .boss-header {
+      background: linear-gradient(135deg, #2d1b36 0%, #1a2a3a 100%);
+      color: #fff;
+      border-radius: 14px;
+      padding: 12px 16px;
+      border: 3px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .boss-hp-wrap {
+      width: 180px;
+      height: 14px;
+      background: #111;
+      border-radius: 99px;
+      border: 2px solid #fff;
+      overflow: hidden;
+    }
+
+    .boss-hp-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #e53e3e, #f6ad55);
+      transition: width 0.4s ease;
+    }
+
+    .quiz-q-box {
+      background: #fff;
+      border: 2.5px solid #8c5830;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #2c1e12;
+    }
+
+    .quiz-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .quiz-options-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Virtual Controls Bar below Canvas */
+    #controls-bar {
+      background: linear-gradient(180deg, #4b2d17 0%, #2f1b0d 100%);
+      border: 3px solid #8c5830;
+      border-radius: 14px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 42px);
+      grid-template-rows: repeat(2, 38px);
+      gap: 4px;
+    }
+
+    .dpad-btn {
+      background: #6e4526;
+      border: 2px solid var(--gold-light);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 0 #241409;
+    }
+
+    .dpad-btn:active {
+      transform: translateY(2px);
+      background: var(--gold);
+      color: #2c1e12;
+    }
+
+    .controls-guide {
+      font-size: 12.5px;
+      color: #f7e6c4;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .action-btn-a {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #38c172, #1b7a43);
+      border: 3px solid var(--gold-light);
+      color: #fff;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #0e4424;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .action-btn-a:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #0e4424;
+    }
+
+    /* Certificate Styling */
+    .certificate-frame {
+      border: 6px double #b7791f;
+      background: linear-gradient(180deg, #fffdf7 0%, #f9efd2 100%);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    .cert-badges {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+    }
+
+    .cert-badge-pill {
+      background: #e8f8ef;
+      border: 1.5px solid var(--emerald);
+      color: #134e2b;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    #audio-status-toast {
+      position: fixed;
+      bottom: 14px;
+      right: 14px;
+      background: #133b22;
+      color: #ffe07d;
+      border: 2px solid var(--gold);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+
+    @media print {
+      body * { visibility: hidden; }
+      #cert-printable, #cert-printable * { visibility: visible; }
+      #cert-printable {
+        position: fixed;
+        inset: 0;
+        background: #fff;
+        padding: 24px;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-shell">
+  <!-- TOP HUD -->
+  <header id="top-hud">
+    <div class="hud-profile">
+      <div class="avatar-badge" id="hud-avatar">👦</div>
+      <div class="hud-stats">
+        <div class="hud-name-row">
+          <span id="hud-player-name">Ahmad</span>
+          <span class="level-pill" id="hud-level">Lv. 1</span>
+        </div>
+        <div class="xp-bar-wrap">
+          <div class="xp-bar-fill" id="hud-xp-fill"></div>
+        </div>
+        <div class="xp-text">✨ Cahaya Iman: <strong id="hud-xp-val">0</strong> / 570</div>
+      </div>
+    </div>
+
+    <div class="hud-quest-box">
+      <div class="hud-quest-label" id="hud-quest-title">Misi 1: Desa Lembah Tin (Ayat 1–3)</div>
+      <div class="hud-quest-desc" id="hud-quest-desc">Temui Pak Zaid & Pak Hasan untuk mendamaikan perselisihan mereka.</div>
+    </div>
+
+    <div class="hud-actions">
+      <div class="badges-row" title="Koleksi Lencana Akhlak Mulia">
+        <div class="badge-slot" id="badge-0" title="Sahabat At-Tin (Misi 1)">🌿</div>
+        <div class="badge-slot" id="badge-1" title="Penjaga Amanah (Misi 2)">🛡️</div>
+        <div class="badge-slot" id="badge-2" title="Ahli Amal Saleh (Misi 3)">✨</div>
+        <div class="badge-slot" id="badge-3" title="Kesatria Akhlak Mulia (Misi 4)">👑</div>
+      </div>
+      <button class="btn-hud" onclick="openMushafModal()">📖 Mushaf At-Tin</button>
+      <button class="btn-hud secondary" id="btn-bgm" onclick="toggleBGM()">🎵 Musik: ON</button>
+    </div>
+  </header>
+
+  <!-- GAME VIEWPORT -->
+  <main id="viewport-wrap">
+    <canvas id="gameCanvas" width="640" height="400"></canvas>
+
+    <div id="zone-banner">🌿 Desa Lembah Tin</div>
+    <div id="interact-hint">💬 Tekan [Spasi] atau Tombol [A] untuk Berinteraksi</div>
+
+    <!-- DIALOGUE OVERLAY -->
+    <div id="dialogue-overlay">
+      <div class="dialogue-card">
+        <div class="dialogue-header">
+          <div class="speaker-info">
+            <div class="speaker-icon" id="dlg-icon">👳‍♂️</div>
+            <div>
+              <div class="speaker-name" id="dlg-name">Pak Zaid</div>
+              <div class="speaker-role" id="dlg-role">Petani Kebun Tin</div>
+            </div>
+          </div>
+          <button class="btn-hud secondary" onclick="closeDialogue()">✖ Tutup</button>
+        </div>
+
+        <p class="dialogue-text" id="dlg-text"></p>
+
+        <!-- Embedded Verse Audio Player -->
+        <div class="verse-embed" id="dlg-verse-box" style="display:none;"></div>
+
+        <!-- Dialogue Choices -->
+        <div class="dialogue-choices" id="dlg-choices"></div>
+
+        <!-- Continue Button -->
+        <div class="dialogue-footer" id="dlg-footer">
+          <button class="btn-next" id="dlg-next-btn" onclick="advanceDialogue()">Lanjutkan ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TITLE SCREEN MODAL -->
+    <div class="modal-backdrop" id="title-modal">
+      <div class="modal-card title-hero">
+        <span class="pixel-subtitle">GAME EDUKASI AL-QUR'AN HADIS • KELAS 5 MI</span>
+        <h1 class="game-main-title">🌿 Penjelajah At-Tin:<br>Buah Kejujuran &amp; Akhlak Mulia</h1>
+        <div class="dev-credit-pill">👩‍🏫 Pengembang: Risma Amalia, S.Pd</div>
+        <p style="margin:4px 0; font-size:14px; color:#4a3520; max-width:600px;">
+          Masuklah ke dalam <strong>Dunia At-Tin</strong> melalui kitab misterius di perpustakaan Madrasah! Amalkan pesan pokok <strong>Surah At-Tin (Ayat 1–8)</strong>, dengarkan murottal indah, kumpulkan poin <em>Cahaya Iman</em>, dan raih 4 Lencana Akhlak Mulia.
+        </p>
+
+        <div class="student-input-wrap" style="max-width:440px;">
+          <label for="player-name-input">✏️ Nama Lengkap Siswa:</label>
+          <input type="text" id="player-name-input" placeholder="Contoh: Ahmad Fauzan / Fatimah Az-Zahra" maxlength="28" />
+        </div>
+
+        <div class="setup-grid" style="max-width:540px;">
+          <div class="char-option selected" id="opt-ahmad" onclick="selectCharacter('ahmad')">
+            <div class="char-preview">👦</div>
+            <div>
+              <div style="font-weight:700; font-size:16px; color:#1b7a43;">Ahmad</div>
+              <div style="font-size:12px; color:#5c3a21;">Siswa Kelas 5 MI • Peci Putih &amp; Koko Hijau</div>
+            </div>
+          </div>
+          <div class="char-option" id="opt-fatimah" onclick="selectCharacter('fatimah')">
+            <div class="char-preview">👧</div>
+            <div>
+              <div style="font-weight:700; font-size:16px; color:#1b7a43;">Fatimah</div>
+              <div style="font-size:12px; color:#5c3a21;">Siswi Kelas 5 MI • Hijab &amp; Gamis Zamrud</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
+          <button class="btn-start-big" onclick="startGame()">📖 Buka Kitab &amp; Mulai Petualangan!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MUSHAF SURAH AT-TIN MODAL -->
+    <div class="modal-backdrop" id="mushaf-modal" style="display:none;">
+      <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #c9a66b; padding-bottom:10px; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <div>
+            <h2 style="margin:0; font-size:20px; color:#1b7a43;">📖 Mushaf Saku: Surah At-Tin (Ayat 1–8)</h2>
+            <span style="font-size:12px; color:#6b4c2e;">Qori: Syaikh Mishary Rashid Alafasy • Terjemahan Kemenag RI</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-audio combo" onclick="playFullSurah()">▶️ Putar Full Surah (1–8)</button>
+            <button class="btn-hud secondary" onclick="stopAllAudio()">⏹️ Stop</button>
+            <button class="btn-hud secondary" onclick="closeMushafModal()">✖ Tutup</button>
+          </div>
+        </div>
+        <div id="mushaf-verses-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+      </div>
+    </div>
+
+    <!-- BOSS QUIZ DUNGEON MODAL -->
+    <div class="modal-backdrop" id="boss-modal" style="display:none;">
+      <div class="modal-card boss-arena">
+        <div class="boss-header">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="font-size:38px;">🌑</div>
+            <div>
+              <div style="font-weight:700; font-size:16px; color:#ffe07d;">Penjaga Ujian: Bayangan Keraguan</div>
+              <div style="font-size:12px; color:#cbd5e0;">Benteng Keadilan • Ayat 7–8 (Allah Hakim yang Maha Adil)</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px; margin-bottom:3px; text-align:right;">Energi Keraguan: <span id="boss-hp-text">5/5</span></div>
+            <div class="boss-hp-wrap">
+              <div class="boss-hp-fill" id="boss-hp-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="boss-verse-helper" class="verse-embed"></div>
+
+        <div class="quiz-q-box" id="boss-question-text">Pertanyaan...</div>
+        <div class="quiz-options-grid" id="boss-options"></div>
+        <div id="boss-feedback" style="font-size:13.5px; font-weight:600; padding:8px 12px; border-radius:10px; display:none;"></div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:12px; color:#6b4c2e;">Jawab dengan benar untuk memancarkan <strong>Cahaya Ilmu</strong>!</span>
+          <button class="btn-hud secondary" onclick="closeBossModal()">Mundur Sementara</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAILY REFLECTION & CERTIFICATE MODAL -->
+    <div class="modal-backdrop" id="reflection-modal" style="display:none;">
+      <div class="modal-card" id="cert-printable">
+        <div id="reflection-step">
+          <h2 style="margin:0 0 6px 0; color:#1b7a43; text-align:center;">🌟 Refleksi Harian Pengamalan Surah At-Tin</h2>
+          <p style="font-size:14px; color:#4a3520; text-align:center; margin-top:0;">
+            Alhamdulillah! Kamu telah menyelesaikan seluruh petualangan di Dunia At-Tin. Sebelum pulang ke Madrasah, tuliskan niat amal saleh yang akan kamu lakukan di dunia nyata:
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:8px; margin:12px 0;">
+            <label style="font-weight:700; font-size:14px; color:#5c3a21;">Pilih Komitmen Utama (atau tulis sendiri di bawah):</label>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              <button type="button" class="btn-audio" onclick="setReflectionPreset('Saya berjanji menjaga kerukunan, tidak mengejek teman (Ahsani Taqwim), dan selalu berkata jujur.')">🤝 Rukun &amp; Anti-Bullying</button>
+              <button type="button" class="btn-audio trans" onclick="setReflectionPreset('Saya berjanji menjaga kebersihan tubuh dan lingkungan madrasah serta rajin beribadah dan bersedekah.')">🌱 Kebersihan &amp; Amal Saleh</button>
+              <button type="button" class="btn-audio combo" onclick="setReflectionPreset('Saya yakin Allah Hakim yang Maha Adil, sehingga saya akan selalu bersikap amanah dan adil kepada sesama.')">⚖️ Jujur &amp; Amanah</button>
+            </div>
+            <textarea id="reflection-input" class="reflection-textarea" rows="3" placeholder="Tuliskan janji kebaikanmu di rumah dan madrasah..."></textarea>
+          </div>
+
+          <div style="text-align:center;">
+            <button class="btn-start-big" onclick="generateCertificate()">🏅 Terbitkan Sertifikat Penjelajah At-Tin</button>
+          </div>
+        </div>
+
+        <div id="certificate-step" style="display:none;">
+          <div class="certificate-frame">
+            <div style="font-size:12px; font-weight:700; color:#1b7a43; letter-spacing:1px;">MADRASAH IBTIDAIYAH • PEMBELAJARAN AL-QUR'AN HADIS</div>
+            <h2 style="margin:6px 0; font-size:24px; color:#5c3a21;">SERTIFIKAT PENJELAJAH AT-TIN</h2>
+            <p style="margin:4px 0; font-size:13px; color:#6b4c2e;">Diberikan dengan bangga kepada:</p>
+            <div id="cert-student-name" style="font-size:26px; font-weight:700; color:#1b7a43; margin:4px 0; text-decoration:underline;">Ahmad</div>
+            <p style="font-size:13.5px; color:#2c1e12; max-width:560px; margin:6px auto;">
+              Telah berhasil menuntaskan seluruh misi pengamalan <strong>Surah At-Tin (Ayat 1–8)</strong> dengan perolehan <strong id="cert-final-xp">570 Poin Cahaya Iman</strong> (Level 5 - Kesatria Akhlak Mulia).
+            </p>
+
+            <div class="cert-badges">
+              <span class="cert-badge-pill">🌿 Sahabat At-Tin</span>
+              <span class="cert-badge-pill">🛡️ Penjaga Amanah</span>
+              <span class="cert-badge-pill">✨ Ahli Amal Saleh</span>
+              <span class="cert-badge-pill">👑 Kesatria Akhlak Mulia</span>
+            </div>
+
+            <div style="background:#fff; border:1.5px dashed #b7791f; border-radius:10px; padding:10px; margin:10px auto; max-width:560px; font-size:13px; color:#3b2313;">
+              <strong>Komitmen Refleksi Harian:</strong><br>
+              <em id="cert-reflection-text">"Saya berjanji menjaga kerukunan dan selalu berkata jujur."</em>
+            </div>
+
+            <div style="margin-top:14px; font-size:13px; color:#5c3a21;">
+              Pengembang Media Pembelajaran:<br>
+              <strong style="font-size:15px; color:#1b7a43;">Risma Amalia, S.Pd</strong>
+            </div>
+          </div>
+
+          <div class="no-print" style="display:flex; justify-content:center; gap:10px; margin-top:12px; flex-wrap:wrap;">
+            <button class="btn-hud" onclick="window.print()">🖨️ Cetak / Simpan PDF</button>
+            <button class="btn-hud secondary" onclick="location.reload()">🔄 Main Lagi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- VIRTUAL CONTROLS BAR -->
+  <footer id="controls-bar">
+    <div class="dpad" aria-label="Tombol Arah">
+      <div></div>
+      <button class="dpad-btn" onmousedown="setVirtualKey('ArrowUp',true)" onmouseup="setVirtualKey('ArrowUp',false)" onmouseleave="setVirtualKey('ArrowUp',false)" ontouchstart="setVirtualKey('ArrowUp',true)" ontouchend="setVirtualKey('ArrowUp',false)">▲</button>
+      <div></div>
+      <button class="dpad-btn" onmousedown="setVirtualKey('ArrowLeft',true)" onmouseup="setVirtualKey('ArrowLeft',false)" onmouseleave="setVirtualKey('ArrowLeft',false)" ontouchstart="setVirtualKey('ArrowLeft',true)" ontouchend="setVirtualKey('ArrowLeft',false)">◀</button>
+      <button class="dpad-btn" onmousedown="setVirtualKey('ArrowDown',true)" onmouseup="setVirtualKey('ArrowDown',false)" onmouseleave="setVirtualKey('ArrowDown',false)" ontouchstart="setVirtualKey('ArrowDown',true)" ontouchend="setVirtualKey('ArrowDown',false)">▼</button>
+      <button class="dpad-btn" onmousedown="setVirtualKey('ArrowRight',true)" onmouseup="setVirtualKey('ArrowRight',false)" onmouseleave="setVirtualKey('ArrowRight',false)" ontouchstart="setVirtualKey('ArrowRight',true)" ontouchend="setVirtualKey('ArrowRight',false)">▶</button>
+    </div>
+
+    <div class="controls-guide">
+      <strong>Kontrol:</strong> Gunakan <strong>Panah / WASD</strong> atau <strong>Klik/Sentuh Peta</strong> untuk berjalan.<br>
+      Ikuti <strong>Panah Kompas Emas</strong> menuju target misi, lalu tekan <strong>[Spasi]</strong> atau tombol <strong>[A]</strong>.
+    </div>
+
+    <button class="action-btn-a" onclick="triggerInteract()" aria-label="Tombol Aksi">
+      <span style="font-size:18px;">A</span>
+      <span style="font-size:10px;">AKSI</span>
+    </button>
+  </footer>
+</div>
+
+<div id="audio-status-toast">🔊 Memutar Murottal Surah At-Tin...</div>
+
+<script>
+/* ============================================================================
+   1. DATA SURAH AT-TIN (AYAT 1 - 8) & AUDIO MUROTTAL QORI + TERJEMAHAN
+   ============================================================================ */
+const SURAH_ATTIN = [
+  {
+    ayat: 1,
+    arabic: "وَالتِّينِ وَالزَّيْتُونِ",
+    translit: "Wat-tīni waz-zaitūn(i)",
+    meaning: "Demi (buah) Tin dan (buah) Zaitun,",
+    audioPrimary: "https://everyayah.com/data/Alafasy_128kbps/095001.mp3",
+    audioBackup: "https://everyayah.com/data/Husary_128kbps/095001.mp3"
+  },
+  {
+    ayat: 2,
+    arabic: "وَطُورِ سِينِينَ",
+    translit: "Wa ṭūri sīnīn(a)",
+    meaning: "demi Gunung Sinai,",
+    audioPrimary: "https://everyayah.com/data/Alafasy_128kbps/095002.mp3",
+    audioBackup: "https://everyayah.com/data/Husary_128kbps/095002.mp3"
+  },
+  {
+    ayat: 3,
+    arabic: "وَهَٰذَا الْبَلَدِ الْأَمِينِ",
+    translit: "Wa hāżal-baladil-amīn(i)",
+    meaning: "dan demi negeri (Mekah) yang aman ini.",
+    audioPrimary: "https://everyayah.com/data/Alafasy_128kbps/095003.mp3",
+    audioBackup: "https://everyayah.com/data/Husary_128kbps/095003.mp3"
+  },
+  {
+    ayat: 4,
+    arabic: "لَقَدْ خَلَقْنَا الْإِنسَانَ فِي أَحْسَنِ تَقْوِيمٍ",
+    translit: "Laqad khalaqnal-insāna fī aḥsani taqwīm(in)",
+    meaning: "Sungguh, Kami benar-benar telah menciptakan manusia dalam bentuk yang sebaik-baiknya.",
+    audioPrimary: "https://everyayah.com/data/Alafasy_128kbps/095004.mp3",
+    audioBackup: "https://everyayah.com/data/Husary_128kbps/095004.mp3"
+  },
+  {
+    ayat: 5,
+    arabic: "ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ",
+    translit: "Ṡumma radadnāhu asfala sāfilīn(a)",
+    meaning: "Kemudian, kami kembalikan dia ke tempat yang serendah-rendahnya,",
+    audioPrimary: "https://everyayah.com/data/Alafasy_128kbps/095005.mp3",
+    audioBackup: "https://everyayah.com/data/Husary_128kbps/095005.mp3"
+  },
+  {
+    ayat: 6,
+    arabic: "إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ",
+    translit: "Illal-lażīna āmanū wa ‘amiluṣ-ṣāliḥāti falahum ajrun gairu mamnūn(in)",
+    meaning: "kecuali orang-orang yang beriman dan mengerjakan kebajikan. Maka, mereka akan mendapat pahala yang tidak putus-putusnya.",
+    audioPrimary: "https://everyayah.com/data/Alafasy_128kbps/095006.mp3",
+    audioBackup: "https://everyayah.com/data/Husary_128kbps/095006.mp3"
+  },
+  {
+    ayat: 7,
+    arabic: "فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ",
+    translit: "Famā yukażżibuka ba‘du bid-dīn(i)",
+    meaning: "Maka, apa alasanmu (wahai orang kafir) mendustakan hari Pembalasan setelah (adanya bukti-bukti) itu?",
+    audioPrimary: "https://everyayah.com/data/Alafasy_128kbps/095007.mp3",
+    audioBackup: "https://everyayah.com/data/Husary_128kbps/095007.mp3"
+  },
+  {
+    ayat: 8,
+    arabic: "أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ",
+    translit: "Alaisallāhu bi'aḥkamil-ḥākimīn(a)",
+    meaning: "Bukankah Allah hakim yang paling adil?",
+    audioPrimary: "https://everyayah.com/data/Alafasy_128kbps/095008.mp3",
+    audioBackup: "https://everyayah.com/data/Husary_128kbps/095008.mp3"
+  }
+];
+
+let currentQoriAudio = null;
+let sequentialQueueAbort = false;
+
+function showAudioToast(msg) {
+  const toast = document.getElementById('audio-status-toast');
+  toast.textContent = msg;
+  toast.style.display = 'flex';
+}
+
+function hideAudioToast() {
+  document.getElementById('audio-status-toast').style.display = 'none';
+}
+
+function stopAllAudio() {
+  sequentialQueueAbort = true;
+  if (currentQoriAudio) {
+    currentQoriAudio.pause();
+    currentQoriAudio.currentTime = 0;
+    currentQoriAudio = null;
+  }
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  hideAudioToast();
+}
+
+function playVerseMurottal(ayatNum, onEndedCallback = null) {
+  stopAllAudio();
+  sequentialQueueAbort = false;
+  const v = SURAH_ATTIN[ayatNum - 1];
+  if (!v) return;
+
+  showAudioToast(`🔊 Murottal Qori • Surah At-Tin Ayat ${ayatNum}`);
+  const audio = new Audio(v.audioPrimary);
+  currentQoriAudio = audio;
+
+  audio.onended = () => {
+    hideAudioToast();
+    if (onEndedCallback && !sequentialQueueAbort) onEndedCallback();
+  };
+
+  audio.onerror = () => {
+    // Fallback to Syaikh Al-Husary
+    const backup = new Audio(v.audioBackup);
+    currentQoriAudio = backup;
+    backup.onended = () => {
+      hideAudioToast();
+      if (onEndedCallback && !sequentialQueueAbort) onEndedCallback();
+    };
+    backup.onerror = () => {
+      // Fallback to SpeechSynthesis Arabic
+      speakText(v.arabic, 'ar-SA', 0.88, () => {
+        hideAudioToast();
+        if (onEndedCallback && !sequentialQueueAbort) onEndedCallback();
+      });
+    };
+    backup.play().catch(() => hideAudioToast());
+  };
+
+  audio.play().catch(() => {
+    hideAudioToast();
+  });
+}
+
+function speakText(text, lang = 'id-ID', rate = 0.94, onEnd = null) {
+  if (!('speechSynthesis' in window)) {
+    if (onEnd) onEnd();
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = lang;
+  utter.rate = rate;
+  utter.pitch = 1.05;
+
+  const voices = window.speechSynthesis.getVoices();
+  const preferred = voices.find(v => v.lang.toLowerCase().includes(lang.toLowerCase().slice(0, 2)));
+  if (preferred) utter.voice = preferred;
+
+  utter.onend = () => {
+    hideAudioToast();
+    if (onEnd) onEnd();
+  };
+  utter.onerror = () => {
+    hideAudioToast();
+    if (onEnd) onEnd();
+  };
+  window.speechSynthesis.speak(utter);
+}
+
+function playVerseTranslation(ayatNum) {
+  stopAllAudio();
+  const v = SURAH_ATTIN[ayatNum - 1];
+  if (!v) return;
+  showAudioToast(`🗣️ Terjemahan Ayat ${ayatNum}: "${v.meaning}"`);
+  speakText(`Ayat ${ayatNum}. ${v.meaning}`, 'id-ID', 0.94);
+}
+
+function playVerseCombo(ayatNum) {
+  playVerseMurottal(ayatNum, () => {
+    setTimeout(() => {
+      if (!sequentialQueueAbort) playVerseTranslation(ayatNum);
+    }, 350);
+  });
+}
+
+function playVerseRange(ayatList) {
+  stopAllAudio();
+  sequentialQueueAbort = false;
+  let idx = 0;
+  function next() {
+    if (sequentialQueueAbort || idx >= ayatList.length) {
+      hideAudioToast();
+      return;
+    }
+    const aNum = ayatList[idx++];
+    const v = SURAH_ATTIN[aNum - 1];
+    showAudioToast(`▶️ Ayat ${aNum} + Terjemahan...`);
+    const audio = new Audio(v.audioPrimary);
+    currentQoriAudio = audio;
+    audio.onended = () => {
+      if (sequentialQueueAbort) return;
+      speakText(v.meaning, 'id-ID', 0.95, () => {
+        if (!sequentialQueueAbort) setTimeout(next, 300);
+      });
+    };
+    audio.onerror = () => {
+      speakText(v.meaning, 'id-ID', 0.95, () => {
+        if (!sequentialQueueAbort) setTimeout(next, 300);
+      });
+    };
+    audio.play().catch(() => hideAudioToast());
+  }
+  next();
+}
+
+function playFullSurah() {
+  playVerseRange([1, 2, 3, 4, 5, 6, 7, 8]);
+}
+
+function renderVerseEmbedHTML(ayatNumbers) {
+  const rows = ayatNumbers.map(num => {
+    const v = SURAH_ATTIN[num - 1];
+    return `
+      <div style="border-bottom: 1px solid #dcc59a; padding-bottom:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <span style="background:#1b7a43; color:#fff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:99px;">Surah At-Tin • Ayat ${v.ayat}</span>
+          <div class="audio-controls-row">
+            <button type="button" class="btn-audio" onclick="playVerseMurottal(${v.ayat})">🔊 Murottal Qori</button>
+            <button type="button" class="btn-audio trans" onclick="playVerseTranslation(${v.ayat})">🗣️ Terjemahan</button>
+            <button type="button" class="btn-audio combo" onclick="playVerseCombo(${v.ayat})">▶️ Ayat + Arti</button>
+          </div>
+        </div>
+        <div class="verse-arabic">${v.arabic} ﴿${v.ayat}﴾</div>
+        <div class="verse-translit">${v.translit}</div>
+        <div class="verse-meaning">"${v.meaning}"</div>
+      </div>
+    `;
+  }).join('');
+
+  const multiBtn = ayatNumbers.length > 1
+    ? `<button type="button" class="btn-audio combo" style="align-self:flex-start;" onclick="playVerseRange([${ayatNumbers.join(',')}])">🎧 Putar Semua Ayat (${ayatNumbers[0]}–${ayatNumbers[ayatNumbers.length - 1]}) &amp; Terjemahan</button>`
+    : '';
+
+  return `${rows}${multiBtn}`;
+}
+
+function openMushafModal() {
+  const container = document.getElementById('mushaf-verses-list');
+  container.innerHTML = SURAH_ATTIN.map(v => `
+    <div class="verse-embed">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+        <strong style="color:#1b7a43;">Ayat ke-${v.ayat}</strong>
+        <div class="audio-controls-row">
+          <button class="btn-audio" onclick="playVerseMurottal(${v.ayat})">🔊 Murottal Qori</button>
+          <button class="btn-audio trans" onclick="playVerseTranslation(${v.ayat})">🗣️ Terjemahan ID</button>
+          <button class="btn-audio combo" onclick="playVerseCombo(${v.ayat})">▶️ Ayat + Arti</button>
+        </div>
+      </div>
+      <div class="verse-arabic">${v.arabic} ﴿${v.ayat}﴾</div>
+      <div class="verse-translit">${v.translit}</div>
+      <div class="verse-meaning">"${v.meaning}"</div>
+    </div>
+  `).join('');
+  document.getElementById('mushaf-modal').style.display = 'flex';
+}
+
+function closeMushafModal() {
+  stopAllAudio();
+  document.getElementById('mushaf-modal').style.display = 'none';
+}
+
+/* ============================================================================
+   2. RETRO WEB AUDIO CHIPTUNE BGM & SOUND EFFECTS
+   ============================================================================ */
+let audioCtx = null;
+let bgmEnabled = true;
+let bgmTimer = null;
+let bgmStep = 0;
+
+function ensureAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
+function playSFX(type) {
+  if (!bgmEnabled) return;
+  try {
+    ensureAudioCtx();
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (type === 'pickup') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.08);
+      osc.frequency.setValueAtTime(783.99, now + 0.16);
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+      osc.start(now);
+      osc.stop(now + 0.32);
+    } else if (type === 'quest') {
+      osc.type = 'square';
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((n, i) => osc.frequency.setValueAtTime(n, now + i * 0.11));
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+      osc.start(now);
+      osc.stop(now + 0.55);
+    } else if (type === 'blip') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, now);
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+      osc.start(now);
+      osc.stop(now + 0.06);
+    } else if (type === 'wrong') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.setValueAtTime(180, now + 0.14);
+      gain.gain.setValueAtTime(0.09, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    }
+  } catch (e) {}
+}
+
+// Gentle Hijaz / Peaceful Islamic Pentatonic Retro Melody
+const BGM_NOTES = [
+  293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66, 261.63,
+  293.66, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63, 293.66
+];
+
+function startBGM() {
+  if (bgmTimer) clearInterval(bgmTimer);
+  bgmTimer = setInterval(() => {
+    if (!bgmEnabled || currentQoriAudio) return;
+    try {
+      ensureAudioCtx();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      const freq = BGM_NOTES[bgmStep % BGM_NOTES.length];
+      bgmStep++;
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0.032, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.38);
+    } catch (e) {}
+  }, 440);
+}
+
+function toggleBGM() {
+  bgmEnabled = !bgmEnabled;
+  document.getElementById('btn-bgm').textContent = bgmEnabled ? '🎵 Musik: ON' : '🔇 Musik: OFF';
+  if (bgmEnabled) startBGM();
+}
+
+/* ============================================================================
+   3. GAME STATE, WORLD MAP (36x26 TILES) & MISSION ENGINE
+   ============================================================================ */
+const TILE = 32;
+const MAP_COLS = 36;
+const MAP_ROWS = 26;
+
+// Tile IDs:
+// 0: Grass, 1: Stone Path, 2: Water/Oasis, 3: Wooden Bridge, 4: Wall/Hedge,
+// 5: Tin Tree (purple figs), 6: Zaitun Tree (olives), 7: Mosque/House Roof, 8: Golden Tile
+const WORLD_MAP = [];
+
+function buildWorldMap() {
+  for (let r = 0; r < MAP_ROWS; r++) {
+    const row = [];
+    for (let c = 0; c < MAP_COLS; c++) {
+      // Outer border trees/hedges
+      if (r === 0 || r === MAP_ROWS - 1 || c === 0 || c === MAP_COLS - 1) {
+        row.push(4);
+        continue;
+      }
+      // Central river running vertically at col 17-18 with two wooden bridges
+      if ((c === 17 || c === 18) && r !== 7 && r !== 19) {
+        row.push(2);
+        continue;
+      }
+      if ((c === 17 || c === 18) && (r === 7 || r === 19)) {
+        row.push(3);
+        continue;
+      }
+      // Horizontal river dividing North & South at row 13 with two wooden bridges
+      if (r === 13 && c !== 8 && c !== 27) {
+        row.push(2);
+        continue;
+      }
+      if (r === 13 && (c === 8 || c === 27)) {
+        row.push(3);
+        continue;
+      }
+      // Main Stone Paths
+      if (
+        (r === 19 && c >= 4 && c <= 29) ||
+        (r === 7 && c >= 5 && c <= 30) ||
+        (c === 8 && r >= 6 && r <= 21) ||
+        (c === 27 && r >= 5 && r <= 21)
+      ) {
+        row.push(1);
+        continue;
+      }
+      // Benteng Keadilan golden plaza (North-East: cols 25-32, rows 3-6)
+      if (r >= 3 && r <= 6 && c >= 25 && c <= 32) {
+        row.push(8);
+        continue;
+      }
+      // Decorative Tin & Zaitun trees
+      if ((r % 4 === 2 && c % 5 === 2) && !(c >= 7 && c <= 10 && r >= 17 && r <= 21)) {
+        row.push((r + c) % 2 === 0 ? 5 : 6);
+        continue;
+      }
+      row.push(0);
+    }
+    WORLD_MAP.push(row);
+  }
+}
+buildWorldMap();
+
+const gameState = {
+  started: false,
+  playerName: 'Ahmad',
+  character: 'ahmad',
+  x: 6 * TILE,
+  y: 19 * TILE,
+  speed: 2.6,
+  dir: 'down',
+  animFrame: 0,
+  animTimer: 0,
+  xp: 0,
+  level: 1,
+  badges: [false, false, false, false],
+  // Quest progression
+  missionStep: 1, // 1, 2, 3, 4, 5 (completed)
+  m1TalkedZaid: false,
+  m1TalkedHasan: false,
+  m2TrashCollected: 0,
+  m2FruitsCollected: 0,
+  m2HelpedBilal: false,
+  m3HasCoinPouch: false,
+  m3ReturnedCoins: false,
+  m3HasFoodBasket: false,
+  m3DeliveredFood: false,
+  bossHP: 5,
+  bossQIndex: 0,
+  targetPoint: null
+};
+
+// Interactive Entities on the Map
+const entities = [
+  // MISSION 1: Desa Lembah Tin (South-West)
+  {
+    id: 'pak_zaid',
+    type: 'npc',
+    x: 10 * TILE,
+    y: 18 * TILE,
+    icon: '👳‍♂️',
+    color: '#2b6cb0',
+    label: 'Pak Zaid',
+    role: 'Petani Kebun Tin',
+    activeMission: 1
+  },
+  {
+    id: 'pak_hasan',
+    type: 'npc',
+    x: 13 * TILE,
+    y: 20 * TILE,
+    icon: '🧔',
+    color: '#b7791f',
+    label: 'Pak Hasan',
+    role: 'Petani Kebun Zaitun',
+    activeMission: 1
+  },
+
+  // MISSION 2: Taman Ahsani Taqwim (South-East)
+  { id: 'trash_1', type: 'trash', x: 21 * TILE, y: 17 * TILE, icon: '🧴', label: 'Sampah Plastik', collected: false, activeMission: 2 },
+  { id: 'trash_2', type: 'trash', x: 24 * TILE, y: 21 * TILE, icon: '🥫', label: 'Kaleng Bekas', collected: false, activeMission: 2 },
+  { id: 'trash_3', type: 'trash', x: 29 * TILE, y: 16 * TILE, icon: '📄', label: 'Kertas Kotor', collected: false, activeMission: 2 },
+  { id: 'trash_4', type: 'trash', x: 31 * TILE, y: 21 * TILE, icon: '🍌', label: 'Kulit Pisang', collected: false, activeMission: 2 },
+  { id: 'fruit_1', type: 'fruit', x: 22 * TILE, y: 22 * TILE, icon: '🫐', label: 'Buah Tin Segar', collected: false, activeMission: 2 },
+  { id: 'fruit_2', type: 'fruit', x: 30 * TILE, y: 18 * TILE, icon: '🫒', label: 'Buah Zaitun Sehat', collected: false, activeMission: 2 },
+  {
+    id: 'bilal',
+    type: 'npc',
+    x: 27 * TILE,
+    y: 19 * TILE,
+    icon: '🧒',
+    color: '#38a169',
+    label: 'Bilal',
+    role: 'Sahabat Taman Ahsani Taqwim',
+    activeMission: 2
+  },
+
+  // MISSION 3: Kampung & Pasar Kejujuran (North-West)
+  {
+    id: 'coin_pouch',
+    type: 'item',
+    x: 6 * TILE,
+    y: 9 * TILE,
+    icon: '💰',
+    label: 'Kantong Koin Terjatuh',
+    collected: false,
+    activeMission: 3
+  },
+  {
+    id: 'pedagang_umar',
+    type: 'npc',
+    x: 11 * TILE,
+    y: 6 * TILE,
+    icon: '👳',
+    color: '#d69e2e',
+    label: 'Pedagang Umar',
+    role: 'Pedagang Pasar Kejujuran',
+    activeMission: 3
+  },
+  {
+    id: 'nenek_aminah',
+    type: 'npc',
+    x: 5 * TILE,
+    y: 5 * TILE,
+    icon: '👵',
+    color: '#805ad5',
+    label: 'Nenek Aminah',
+    role: 'Warga Duafa',
+    activeMission: 3
+  },
+
+  // MISSION 4: Benteng Keadilan (North-East)
+  {
+    id: 'penjaga_benteng',
+    type: 'npc',
+    x: 28 * TILE,
+    y: 4 * TILE,
+    icon: '🌑',
+    color: '#4a5568',
+    label: 'Bayangan Keraguan',
+    role: 'Ujian Benteng Keadilan',
+    activeMission: 4
+  }
+];
+
+/* ============================================================================
+   4. UI & HUD UPDATES
+   ============================================================================ */
+function selectCharacter(charKey) {
+  gameState.character = charKey;
+  document.getElementById('opt-ahmad').classList.toggle('selected', charKey === 'ahmad');
+  document.getElementById('opt-fatimah').classList.toggle('selected', charKey === 'fatimah');
+  if (!document.getElementById('player-name-input').value.trim()) {
+    gameState.playerName = charKey === 'ahmad' ? 'Ahmad' : 'Fatimah';
+  }
+}
+
+function startGame() {
+  ensureAudioCtx();
+  startBGM();
+  const inputName = document.getElementById('player-name-input').value.trim();
+  if (inputName) {
+    gameState.playerName = inputName;
+  } else {
+    gameState.playerName = gameState.character === 'ahmad' ? 'Ahmad' : 'Fatimah';
+  }
+
+  document.getElementById('hud-player-name').textContent = gameState.playerName;
+  document.getElementById('hud-avatar').textContent = gameState.character === 'ahmad' ? '👦' : '👧';
+  document.getElementById('title-modal').style.display = 'none';
+  gameState.started = true;
+  updateHUD();
+
+  // Opening Prologue Dialogue
+  openDialogue({
+    icon: '📖',
+    name: 'Kitab Cahaya At-Tin',
+    role: 'Perpustakaan Madrasah Ibtidaiyah',
+    text: `Assalamu'alaikum, ${gameState.playerName}! Cahaya kitab membawamu ke Dunia At-Tin. Di desa ini, Pak Zaid dan Pak Hasan sedang berselisih paham tentang aliran air kebun buah Tin dan Zaitun. Yuk, temui Pak Zaid di Desa Lembah Tin untuk mendamaikan mereka!`,
+    verses: [1, 2, 3],
+    choices: null,
+    onClose: () => {
+      showZoneBanner('🌿 Desa Lembah Tin (Ayat 1–3)');
+    }
+  });
+}
+
+function addCahayaIman(points, unlockBadgeIdx = -1) {
+  gameState.xp += points;
+  if (gameState.xp >= 570) gameState.level = 5;
+  else if (gameState.xp >= 370) gameState.level = 4;
+  else if (gameState.xp >= 220) gameState.level = 3;
+  else if (gameState.xp >= 100) gameState.level = 2;
+
+  if (unlockBadgeIdx >= 0) {
+    gameState.badges[unlockBadgeIdx] = true;
+    document.getElementById(`badge-${unlockBadgeIdx}`).classList.add('unlocked');
+    playSFX('quest');
+  } else {
+    playSFX('pickup');
+  }
+  updateHUD();
+}
+
+function updateHUD() {
+  document.getElementById('hud-xp-val').textContent = gameState.xp;
+  document.getElementById('hud-level').textContent = `Lv. ${gameState.level}`;
+  const pct = Math.min(100, Math.round((gameState.xp / 570) * 100));
+  document.getElementById('hud-xp-fill').style.width = `${pct}%`;
+
+  const qTitle = document.getElementById('hud-quest-title');
+  const qDesc = document.getElementById('hud-quest-desc');
+
+  if (gameState.missionStep === 1) {
+    qTitle.textContent = 'Misi 1: Desa Lembah Tin (Ayat 1–3)';
+    if (!gameState.m1TalkedZaid) qDesc.textContent = 'Temui Pak Zaid di kebun buah Tin.';
+    else if (!gameState.m1TalkedHasan) qDesc.textContent = 'Dengarkan penjelasan Pak Hasan di sebelah timur kebun.';
+    else qDesc.textContent = 'Kembali kepada Pak Zaid untuk memediasi perdamaian!';
+  } else if (gameState.missionStep === 2) {
+    qTitle.textContent = 'Misi 2: Taman Ahsani Taqwim (Ayat 4)';
+    qDesc.textContent = `Bersihkan sampah (${gameState.m2TrashCollected}/4), petik buah sehat (${gameState.m2FruitsCollected}/2), & hibur Bilal (${gameState.m2HelpedBilal ? '✓' : 'Belum'}).`;
+  } else if (gameState.missionStep === 3) {
+    qTitle.textContent = 'Misi 3: Pasar Kejujuran (Ayat 5–6)';
+    if (!gameState.m3HasCoinPouch) qDesc.textContent = 'Seberangi jembatan utara menuju Pasar Kejujuran & periksa jalan setapak.';
+    else if (!gameState.m3ReturnedCoins) qDesc.textContent = 'Kembalikan Kantong Koin kepada Pedagang Umar!';
+    else if (!gameState.m3DeliveredFood) qDesc.textContent = 'Antarkan Keranjang Makanan sedekah kepada Nenek Aminah!';
+  } else if (gameState.missionStep === 4) {
+    qTitle.textContent = 'Misi 4: Benteng Keadilan (Ayat 7–8)';
+    qDesc.textContent = 'Seberangi jembatan timur laut menuju Benteng Keadilan & kalahkan Bayangan Keraguan!';
+  } else {
+    qTitle.textContent = '🎉 Semua Misi Selesai!';
+    qDesc.textContent = 'Alhamdulillah! Kamu telah menjadi Penjelajah At-Tin sejati.';
+  }
+}
+
+let bannerTimeout = null;
+function showZoneBanner(text) {
+  const b = document.getElementById('zone-banner');
+  b.textContent = text;
+  b.classList.add('show');
+  if (bannerTimeout) clearTimeout(bannerTimeout);
+  bannerTimeout = setTimeout(() => b.classList.remove('show'), 2800);
+}
+
+/* ============================================================================
+   5. DIALOGUE & QUEST INTERACTION LOGIC
+   ============================================================================ */
+let activeDialogue = null;
+
+function openDialogue(cfg) {
+  activeDialogue = cfg;
+  playSFX('blip');
+  document.getElementById('dlg-icon').textContent = cfg.icon || '💬';
+  document.getElementById('dlg-name').textContent = cfg.name || 'Info';
+  document.getElementById('dlg-role').textContent = cfg.role || '';
+  document.getElementById('dlg-text').textContent = cfg.text || '';
+
+  const verseBox = document.getElementById('dlg-verse-box');
+  if (cfg.verses && cfg.verses.length > 0) {
+    verseBox.innerHTML = renderVerseEmbedHTML(cfg.verses);
+    verseBox.style.display = 'flex';
+  } else {
+    verseBox.style.display = 'none';
+  }
+
+  const choicesBox = document.getElementById('dlg-choices');
+  const footerBox = document.getElementById('dlg-footer');
+  choicesBox.innerHTML = '';
+
+  if (cfg.choices && cfg.choices.length > 0) {
+    footerBox.style.display = 'none';
+    cfg.choices.forEach(ch => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerHTML = `<span>👉</span> <span>${ch.label}</span>`;
+      btn.onclick = () => {
+        stopAllAudio();
+        ch.action();
+      };
+      choicesBox.appendChild(btn);
+    });
+  } else {
+    footerBox.style.display = 'flex';
+  }
+
+  document.getElementById('dialogue-overlay').style.display = 'flex';
+}
+
+function advanceDialogue() {
+  const cb = activeDialogue ? activeDialogue.onClose : null;
+  closeDialogue();
+  if (cb) cb();
+}
+
+function closeDialogue() {
+  stopAllAudio();
+  activeDialogue = null;
+  document.getElementById('dialogue-overlay').style.display = 'none';
+}
+
+function interactWithEntity(ent) {
+  // --- MISSION 1: DESA LEMBAH TIN ---
+  if (ent.id === 'pak_zaid') {
+    if (gameState.missionStep > 1) {
+      openDialogue({
+        icon: '👳‍♂️', name: 'Pak Zaid', role: 'Petani Kebun Tin',
+        text: 'Terima kasih banyak! Sejak kami berbagi jadwal air secara adil, kebun buah Tin dan Zaitun tumbuh subur dan desa kita terasa damai.',
+        verses: [1, 3]
+      });
+      return;
+    }
+    if (!gameState.m1TalkedZaid) {
+      gameState.m1TalkedZaid = true;
+      updateHUD();
+      openDialogue({
+        icon: '👳‍♂️', name: 'Pak Zaid', role: 'Petani Kebun Tin',
+        text: `Assalamu'alaikum, ${gameState.playerName}! Pohon buah Tinku sedang kekeringan karena saluran air ditutup oleh Pak Hasan. Tolong tanyakan pada Pak Hasan di sebelah timur mengapa ia menutup airnya.`
+      });
+    } else if (!gameState.m1TalkedHasan) {
+      openDialogue({
+        icon: '👳‍♂️', name: 'Pak Zaid', role: 'Petani Kebun Tin',
+        text: 'Pak Hasan berada di dekat pohon Zaitun di sebelah timur kebun ini. Tolong bicaralah dengannya baik-baik ya.'
+      });
+    } else {
+      // Mediation choice!
+      openDialogue({
+        icon: '👳‍♂️', name: 'Pak Zaid & Pak Hasan', role: 'Musyawarah Desa Lembah Tin',
+        text: 'Pak Hasan sudah datang ke sini. Menurutmu, bagaimana cara menyelesaikan masalah pembagian air ini sesuai pesan Surah At-Tin Ayat 1–3?',
+        verses: [1, 2, 3],
+        choices: [
+          {
+            label: 'Mengajak berbagi jadwal air pagi & sore secara adil demi menjaga kedamaian desa (Kota yang Aman).',
+            action: () => {
+              gameState.missionStep = 2;
+              addCahayaIman(100, 0);
+              openDialogue({
+                icon: '🌿', name: 'Misi 1 Selesai! Lencana: Sahabat At-Tin', role: '+100 Cahaya Iman • Naik ke Level 2',
+                text: 'Alhamdulillah! Pak Zaid dan Pak Hasan saling bermaafan dan sepakat berbagi air dengan rukun. Kini seberangi jembatan kayu di sebelah timur menuju Taman Ahsani Taqwim (Misi 2)!',
+                onClose: () => showZoneBanner('🌱 Taman Ahsani Taqwim (Ayat 4)')
+              });
+            }
+          },
+          {
+            label: 'Menyuruh mereka berebut siapa yang paling cepat mengambil air.',
+            action: () => {
+              playSFX('wrong');
+              openDialogue({
+                icon: '💡', name: 'Ingat Pesan Ayat 3', role: 'Al-Balad Al-Amin (Negeri yang Aman)',
+                text: 'Berebut justru memicu permusuhan! Ingatlah bahwa Allah bersumpah demi negeri yang aman dan damai. Coba ajak mereka bermusyawarah dengan adil.'
+              });
+            }
+          }
+        ]
+      });
+    }
+  }
+
+  else if (ent.id === 'pak_hasan') {
+    if (gameState.missionStep > 1) {
+      openDialogue({
+        icon: '🧔', name: 'Pak Hasan', role: 'Petani Kebun Zaitun',
+        text: 'Semoga perjalananmu di Dunia At-Tin penuh berkah, Nak!'
+      });
+      return;
+    }
+    if (!gameState.m1TalkedZaid) {
+      openDialogue({
+        icon: '🧔', name: 'Pak Hasan', role: 'Petani Kebun Zaitun',
+        text: 'Selamat datang di Desa Lembah Tin! Coba temui Pak Zaid terlebih dahulu di sebelah barat kebun ini.'
+      });
+    } else {
+      gameState.m1TalkedHasan = true;
+      updateHUD();
+      openDialogue({
+        icon: '🧔', name: 'Pak Hasan', role: 'Petani Kebun Zaitun',
+        text: 'Wa\'alaikumussalam. Sebenarnya aku tidak bermaksud merugikan Pak Zaid, hanya saja pohon Zaitunku juga butuh air pagi ini. Mari kita kembali ke tempat Pak Zaid agar kamu bisa membantu menengahi kami!'
+      });
+    }
+  }
+
+  // --- MISSION 2: TAMAN AHSANI TAQWIM ---
+  else if (ent.type === 'trash') {
+    if (gameState.missionStep < 2) {
+      openDialogue({ icon: 'ℹ️', name: 'Taman Ahsani Taqwim', role: 'Area Misi 2', text: 'Selesaikan Misi 1 di Desa Lembah Tin terlebih dahulu ya!' });
+      return;
+    }
+    ent.collected = true;
+    gameState.m2TrashCollected++;
+    addCahayaIman(10);
+    checkMission2Completion();
+    openDialogue({
+      icon: '♻️', name: 'Menjaga Kebersihan Lingkungan', role: '+10 Cahaya Iman',
+      text: `Kamu memungut ${ent.label} dan membuangnya ke tempat sampah! (${gameState.m2TrashCollected}/4 sampah dibersihkan). Manusia diciptakan sebagai makhluk terbaik (Ahsani Taqwim) yang wajib menjaga kebersihan.`
+    });
+  }
+
+  else if (ent.type === 'fruit') {
+    if (gameState.missionStep < 2) {
+      openDialogue({ icon: 'ℹ️', name: 'Taman Ahsani Taqwim', role: 'Area Misi 2', text: 'Selesaikan Misi 1 di Desa Lembah Tin terlebih dahulu ya!' });
+      return;
+    }
+    ent.collected = true;
+    gameState.m2FruitsCollected++;
+    addCahayaIman(15);
+    checkMission2Completion();
+    openDialogue({
+      icon: ent.icon, name: ent.label, role: '+15 Cahaya Iman',
+      text: `Kamu memetik ${ent.label} yang kaya manfaat! (${gameState.m2FruitsCollected}/2 buah sehat terkumpul). Mengonsumsi makanan halal dan bergizi adalah cara mensyukuri tubuh ciptaan terbaik Allah.`
+    });
+  }
+
+  else if (ent.id === 'bilal') {
+    if (gameState.missionStep < 2) {
+      openDialogue({ icon: '🧒', name: 'Bilal', role: 'Sahabat Taman', text: 'Halo! Selesaikan dulu urusan di Desa Lembah Tin sebelah barat ya.' });
+      return;
+    }
+    if (gameState.m2HelpedBilal) {
+      openDialogue({
+        icon: '🧒', name: 'Bilal', role: 'Sahabat Taman Ahsani Taqwim',
+        text: 'Terima kasih sudah menyemangatiku! Sekarang aku percaya bahwa setiap manusia adalah ciptaan Allah yang mulia.',
+        verses: [4]
+      });
+      return;
+    }
+    openDialogue({
+      icon: '🧒', name: 'Bilal', role: 'Sahabat Taman Ahsani Taqwim',
+      text: 'Hiks... tadi ada anak yang mengejek warna kulit dan bentuk tubuhku. Aku jadi merasa sedih dan tidak percaya diri. Bagaimana menurutmu?',
+      verses: [4],
+      choices: [
+        {
+          label: 'Menghibur Bilal: "Jangan sedih! Dalam Surah At-Tin Ayat 4, Allah menegaskan manusia diciptakan dalam bentuk sebaik-baiknya (Ahsani Taqwim). Mengejek fisik itu perbuatan tercela."',
+          action: () => {
+            gameState.m2HelpedBilal = true;
+            addCahayaIman(20);
+            const done = checkMission2Completion();
+            if (!done) {
+              openDialogue({
+                icon: '😊', name: 'Bilal Tersenyum Kembali!', role: '+20 Cahaya Iman',
+                text: 'Terima kasih banyak! Aku merasa jauh lebih baik sekarang. Jangan lupa pastikan semua sampah (4) dan buah sehat (2) di taman ini sudah terkumpul ya!'
+              });
+            }
+          }
+        },
+        {
+          label: 'Ikut menertawakan Bilal agar terlihat keren.',
+          action: () => {
+            playSFX('wrong');
+            openDialogue({
+              icon: '⚠️', name: 'Stop Perundungan (Bullying)!', role: 'Pengamalan Ayat 4',
+              text: 'Mengejek ciptaan Allah bertentangan dengan pesan Surah At-Tin Ayat 4. Setiap manusia dimuliakan oleh Allah. Yuk hibur Bilal dengan kata-kata yang baik!'
+            });
+          }
+        }
+      ]
+    });
+  }
+
+  // --- MISSION 3: PASAR KEJUJURAN ---
+  else if (ent.id === 'coin_pouch') {
+    if (gameState.missionStep < 3) {
+      openDialogue({ icon: 'ℹ️', name: 'Pasar Kejujuran', role: 'Area Misi 3', text: 'Selesaikan Misi 2 di Taman Ahsani Taqwim terlebih dahulu!' });
+      return;
+    }
+    ent.collected = true;
+    gameState.m3HasCoinPouch = true;
+    playSFX('pickup');
+    updateHUD();
+    openDialogue({
+      icon: '💰', name: 'Kantong Koin Ditemukan!', role: 'Ujian Amanah (Ayat 5–6)',
+      text: 'Kamu menemukan sebuah kantong berisi koin emas terjatuh di jalan Pasar Kejujuran! Di kejauhan terlihat Pedagang Umar tampak kebingungan mencari sesuatu.',
+      verses: [5, 6]
+    });
+  }
+
+  else if (ent.id === 'pedagang_umar') {
+    if (gameState.missionStep < 3) {
+      openDialogue({ icon: '👳', name: 'Pedagang Umar', role: 'Pedagang Pasar', text: 'Selamat datang di Pasar Kejujuran! Selesaikan dulu tugasmu di Taman Ahsani Taqwim.' });
+      return;
+    }
+    if (!gameState.m3HasCoinPouch) {
+      openDialogue({
+        icon: '👳', name: 'Pedagang Umar', role: 'Pedagang Pasar Kejujuran',
+        text: 'Aduh... kantong koin hasil daganganku terjatuh di sekitar jalan masuk Pasar Kejujuran sebelah selatan. Kalau kamu melihatnya, tolong beri tahu aku ya!'
+      });
+      return;
+    }
+    if (!gameState.m3ReturnedCoins) {
+      openDialogue({
+        icon: '👳', name: 'Pedagang Umar', role: 'Pedagang Pasar Kejujuran',
+        text: 'Wah, kamu menemukan sebuah kantong koin di jalan tadi? Apa yang akan kamu lakukan?',
+        verses: [5, 6],
+        choices: [
+          {
+            label: 'Mengembalikan kantong koin itu dengan jujur kepada Pedagang Umar tanpa mengambil sepeser pun.',
+            action: () => {
+              gameState.m3ReturnedCoins = true;
+              gameState.m3HasFoodBasket = true;
+              addCahayaIman(75);
+              openDialogue({
+                icon: '🧺', name: 'Amanah Terjaga! (+75 Cahaya Iman)', role: 'Menerima Keranjang Makanan Sedekah',
+                text: 'Pedagang Umar sangat bersyukur: "Masya Allah, kejujuranmu luar biasa! Sebagai tanda syukur kepada Allah, tolong antarkan Keranjang Makanan ini untuk Nenek Aminah di sebelah barat pasar ya."'
+              });
+            }
+          },
+          {
+            label: 'Menyembunyikannya untuk dipakai jajan sendiri.',
+            action: () => {
+              playSFX('wrong');
+              openDialogue({
+                icon: '⚠️', name: 'Ingat Pesan Ayat 5–6', role: 'Jauhi Sifat Tidak Jujur',
+                text: 'Mengambil hak orang lain dapat menjatuhkan derajat manusia ke tempat yang serendah-rendahnya (Asfala Safilin). Kembalikanlah dengan jujur!'
+              });
+            }
+          }
+        ]
+      });
+    } else {
+      openDialogue({
+        icon: '👳', name: 'Pedagang Umar', role: 'Pedagang Pasar Kejujuran',
+        text: 'Semoga Allah membalas kejujuran dan amal salehmu dengan pahala yang tiada putus-putusnya!'
+      });
+    }
+  }
+
+  else if (ent.id === 'nenek_aminah') {
+    if (gameState.missionStep < 3) {
+      openDialogue({ icon: '👵', name: 'Nenek Aminah', role: 'Warga Duafa', text: 'Assalamu\'alaikum, Nak. Nanti mampir lagi ke sini ya.' });
+      return;
+    }
+    if (!gameState.m3HasFoodBasket) {
+      openDialogue({
+        icon: '👵', name: 'Nenek Aminah', role: 'Warga Duafa',
+        text: 'Alhamdulillah, meski hidup sederhana Nenek selalu bersyukur. Coba temui Pedagang Umar di sebelah timur pasar dulu ya, Nak.'
+      });
+      return;
+    }
+    if (!gameState.m3DeliveredFood) {
+      gameState.m3DeliveredFood = true;
+      gameState.missionStep = 4;
+      addCahayaIman(75, 2); // Unlock Badge 3: Ahli Amal Saleh
+      openDialogue({
+        icon: '✨', name: 'Misi 3 Selesai! Lencana: Ahli Amal Saleh', role: '+75 Cahaya Iman • Naik ke Level 4',
+        text: 'Nenek Aminah terharu menerima keranjang makanan: "Terima kasih, Nak. Semoga kamu selalu beriman dan beramal saleh!" Kini gerbang Benteng Keadilan di timur laut telah terbuka untuk ujian akhirmu!',
+        verses: [6],
+        onClose: () => showZoneBanner('🏰 Benteng Keadilan (Ayat 7–8)')
+      });
+    } else {
+      openDialogue({
+        icon: '👵', name: 'Nenek Aminah', role: 'Warga Duafa',
+        text: 'Semangat menghadapi ujian akhir di Benteng Keadilan sebelah timur laut, Nak!'
+      });
+    }
+  }
+
+  // --- MISSION 4: BENTENG KEADILAN (BOSS QUIZ) ---
+  else if (ent.id === 'penjaga_benteng') {
+    if (gameState.missionStep < 4) {
+      openDialogue({
+        icon: '🌑', name: 'Gerbang Benteng Keadilan', role: 'Terkunci Cahaya Iman',
+        text: 'Selesaikan ketiga misi sebelumnya di Desa Lembah Tin, Taman Ahsani Taqwim, dan Pasar Kejujuran sebelum memasuki Benteng Keadilan!'
+      });
+      return;
+    }
+    if (gameState.missionStep === 5) {
+      openReflectionModal();
+      return;
+    }
+    openBossBattle();
+  }
+}
+
+function checkMission2Completion() {
+  if (
+    gameState.missionStep === 2 &&
+    gameState.m2TrashCollected >= 4 &&
+    gameState.m2FruitsCollected >= 2 &&
+    gameState.m2HelpedBilal
+  ) {
+    gameState.missionStep = 3;
+    addCahayaIman(50, 1); // Unlock Badge 2: Penjaga Amanah
+    openDialogue({
+      icon: '🛡️', name: 'Misi 2 Selesai! Lencana: Penjaga Amanah', role: '+120 Total Cahaya Iman • Naik ke Level 3',
+      text: 'Luar biasa! Taman menjadi bersih, tubuh terjaga dengan buah sehat, dan Bilal kembali ceria. Kamu telah mengamalkan Ayat 4 (Ahsani Taqwim). Sekarang lanjutkan perjalanan ke Pasar Kejujuran di barat laut (Misi 3)!',
+      verses: [4],
+      onClose: () => showZoneBanner('🕌 Pasar Kejujuran (Ayat 5–6)')
+    });
+    return true;
+  }
+  return false;
+}
+
+/* ============================================================================
+   6. BOSS QUIZ DUNGEON (MISI 4: AYAT 7-8)
+   ============================================================================ */
+const BOSS_QUESTIONS = [
+  {
+    ayat: [1, 2, 3],
+    q: "1. Dalam Surah At-Tin ayat 1–3, Allah SWT bersumpah dengan empat hal yang mulia. Manakah yang BUKAN termasuk sumpah Allah pada ayat tersebut?",
+    options: [
+      "Buah Tin dan buah Zaitun",
+      "Gunung Sinai (Thur Sinin)",
+      "Gunung Uhud di Madinah",
+      "Kota Mekkah yang aman (Al-Balad Al-Amin)"
+    ],
+    correct: 2,
+    explain: "Tepat! Sumpah Allah dalam Ayat 1–3 adalah buah Tin, buah Zaitun, Gunung Sinai, dan Kota Mekkah yang aman."
+  },
+  {
+    ayat: [4],
+    q: "2. Lafal 'فِي أَحْسَنِ تَقْوِيمٍ' (Ayat 4) berarti manusia diciptakan dalam bentuk sebaik-baiknya. Contoh pengamalan sikap tersebut di madrasah adalah...",
+    options: [
+      "Mengejek teman yang berbeda fisik",
+      "Bersyukur, merawat kebersihan diri, dan menghormati sesama",
+      "Menyombongkan kepintaran di depan teman",
+      "Membuang sampah di laci meja kelas"
+    ],
+    correct: 1,
+    explain: "Masya Allah, benar! Mensyukuri ciptaan terbaik diwujudkan dengan menjaga kesehatan, kebersihan, dan anti-bullying."
+  },
+  {
+    ayat: [5, 6],
+    q: "3. Menurut Surah At-Tin ayat 5–6, manusia tidak akan dikembalikan ke tempat serendah-rendahnya (Asfala Safilin) apabila ia...",
+    options: [
+      "Memiliki harta yang melimpah saja",
+      "Beriman kepada Allah dan mengerjakan amal saleh",
+      "Sering membanggakan diri sendiri",
+      "Hanya bermain tanpa belajar"
+    ],
+    correct: 1,
+    explain: "Hebat! Iman yang kokoh disertai amal saleh membuat manusia mulia dan mendapat pahala tiada putus (ajrun ghairu mamnun)."
+  },
+  {
+    ayat: [7],
+    q: "4. Pada ayat ke-7 'فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ', kata 'Ad-Din' dalam ayat tersebut memiliki arti...",
+    options: [
+      "Hari Pembalasan / Hari Kiamat",
+      "Buah-buahan yang manis",
+      "Perjalanan dagang musim dingin",
+      "Kekayaan duniawi"
+    ],
+    correct: 0,
+    explain: "Benar sekali! Kata 'Ad-Din' pada ayat ke-7 bermakna Hari Pembalasan atas seluruh amal perbuatan manusia."
+  },
+  {
+    ayat: [8],
+    q: "5. Ayat terakhir Surah At-Tin 'أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ' menegaskan bahwa Allah adalah...",
+    options: [
+      "Hakim yang paling adil",
+      "Pencipta langit dan bumi",
+      "Maha Pemberi Rezeki",
+      "Maha Mendengar doa"
+    ],
+    correct: 0,
+    explain: "Alhamdulillah! Allah adalah Hakim Yang Maha Adil, sehingga sekecil apa pun kejujuran dan amal saleh kita pasti dibalas dengan adil."
+  }
+];
+
+function openBossBattle() {
+  gameState.bossHP = BOSS_QUESTIONS.length;
+  gameState.bossQIndex = 0;
+  renderBossQuestion();
+  document.getElementById('boss-modal').style.display = 'flex';
+}
+
+function closeBossModal() {
+  stopAllAudio();
+  document.getElementById('boss-modal').style.display = 'none';
+}
+
+function renderBossQuestion() {
+  const qObj = BOSS_QUESTIONS[gameState.bossQIndex];
+  const hpPct = (gameState.bossHP / BOSS_QUESTIONS.length) * 100;
+  document.getElementById('boss-hp-fill').style.width = `${hpPct}%`;
+  document.getElementById('boss-hp-text').textContent = `${gameState.bossHP}/${BOSS_QUESTIONS.length}`;
+
+  document.getElementById('boss-verse-helper').innerHTML = renderVerseEmbedHTML(qObj.ayat);
+  document.getElementById('boss-question-text').textContent = qObj.q;
+
+  const fb = document.getElementById('boss-feedback');
+  fb.style.display = 'none';
+
+  const optContainer = document.getElementById('boss-options');
+  optContainer.innerHTML = '';
+
+  qObj.options.forEach((optText, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<strong>${String.fromCharCode(65 + idx)}.</strong> <span>${optText}</span>`;
+    btn.onclick = () => handleBossAnswer(idx);
+    optContainer.appendChild(btn);
+  });
+}
+
+function handleBossAnswer(selectedIdx) {
+  stopAllAudio();
+  const qObj = BOSS_QUESTIONS[gameState.bossQIndex];
+  const fb = document.getElementById('boss-feedback');
+  fb.style.display = 'block';
+
+  if (selectedIdx === qObj.correct) {
+    playSFX('pickup');
+    gameState.bossHP--;
+    fb.style.background = '#e6fffa';
+    fb.style.border = '2px solid #1b7a43';
+    fb.style.color = '#134e2b';
+    fb.textContent = `✨ Cahaya Ilmu Memancar! ${qObj.explain}`;
+
+    setTimeout(() => {
+      gameState.bossQIndex++;
+      if (gameState.bossQIndex >= BOSS_QUESTIONS.length) {
+        // Boss Defeated!
+        closeBossModal();
+        gameState.missionStep = 5;
+        addCahayaIman(200, 3); // Unlock Badge 4: Kesatria Akhlak Mulia
+        const bossEnt = entities.find(e => e.id === 'penjaga_benteng');
+        if (bossEnt) {
+          bossEnt.icon = '🕊️';
+          bossEnt.label = 'Cahaya Keadilan';
+        }
+        openDialogue({
+          icon: '👑',
+          name: 'Kemenangan! Lencana: Kesatria Akhlak Mulia',
+          role: '+200 Cahaya Iman • Level Maksimal (Lv. 5)',
+          text: 'Bayangan Keraguan telah sirna oleh cahaya keimanan dan ilmu! Seluruh Negeri At-Tin kini bersinar damai. Mari isi Refleksi Harianmu untuk menerima Sertifikat Kelulusan.',
+          verses: [7, 8],
+          onClose: () => openReflectionModal()
+        });
+      } else {
+        renderBossQuestion();
+      }
+    }, 1500);
+  } else {
+    playSFX('wrong');
+    fb.style.background = '#fff5f5';
+    fb.style.border = '2px solid #c53030';
+    fb.style.color = '#742a2a';
+    fb.textContent = '❌ Kurang tepat! Dengarkan kembali murottal & terjemahan ayat di atas, lalu pilih jawaban yang paling sesuai.';
+  }
+}
+
+/* ============================================================================
+   7. DAILY REFLECTION & CERTIFICATE
+   ============================================================================ */
+function openReflectionModal() {
+  document.getElementById('reflection-step').style.display = 'block';
+  document.getElementById('certificate-step').style.display = 'none';
+  document.getElementById('reflection-modal').style.display = 'flex';
+}
+
+function setReflectionPreset(text) {
+  document.getElementById('reflection-input').value = text;
+}
+
+function generateCertificate() {
+  const txt = document.getElementById('reflection-input').value.trim() ||
+    'Saya berjanji menjaga kerukunan, bersikap jujur, dan mengamalkan Surah At-Tin setiap hari.';
+  document.getElementById('cert-student-name').textContent = gameState.playerName;
+  document.getElementById('cert-final-xp').textContent = `${gameState.xp} Poin Cahaya Iman`;
+  document.getElementById('cert-reflection-text').textContent = `"${txt}"`;
+
+  document.getElementById('reflection-step').style.display = 'none';
+  document.getElementById('certificate-step').style.display = 'block';
+  playSFX('quest');
+}
+
+/* ============================================================================
+   8. INPUT HANDLING (KEYBOARD, VIRTUAL D-PAD, CANVAS CLICK-TO-WALK)
+   ============================================================================ */
+const keys = {};
+
+window.addEventListener('keydown', e => {
+  if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+    if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+    }
+  }
+  keys[e.key] = true;
+  if (e.key === ' ' || e.key === 'Enter') {
+    if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      if (activeDialogue) {
+        if (!activeDialogue.choices) advanceDialogue();
+      } else if (gameState.started) {
+        triggerInteract();
+      }
+    }
+  }
+});
+
+window.addEventListener('keyup', e => {
+  keys[e.key] = false;
+});
+
+function setVirtualKey(key, pressed) {
+  keys[key] = pressed;
+  gameState.targetPoint = null;
+}
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+let cameraX = 0;
+let cameraY = 0;
+
+canvas.addEventListener('click', e => {
+  if (!gameState.started || activeDialogue) return;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const worldX = (e.clientX - rect.left) * scaleX + cameraX;
+  const worldY = (e.clientY - rect.top) * scaleY + cameraY;
+
+  // Check if clicked directly on a nearby entity
+  const clickedEnt = entities.find(ent => !ent.collected && Math.hypot(ent.x + 16 - worldX, ent.y + 16 - worldY) < 26);
+  if (clickedEnt && Math.hypot(clickedEnt.x - gameState.x, clickedEnt.y - gameState.y) < 62) {
+    interactWithEntity(clickedEnt);
+    return;
+  }
+
+  gameState.targetPoint = { x: worldX - 16, y: worldY - 16 };
+});
+
+function getNearbyInteractable() {
+  let nearest = null;
+  let minDist = 52;
+  for (const ent of entities) {
+    if (ent.collected) continue;
+    const d = Math.hypot(ent.x - gameState.x, ent.y - gameState.y);
+    if (d < minDist) {
+      minDist = d;
+      nearest = ent;
+    }
+  }
+  return nearest;
+}
+
+function triggerInteract() {
+  if (!gameState.started || activeDialogue) return;
+  const near = getNearbyInteractable();
+  if (near) {
+    interactWithEntity(near);
+  }
+}
+
+/* ============================================================================
+   9. MOVEMENT, COLLISION & PIXEL ART RENDERING ENGINE
+   ============================================================================ */
+function isTileWalkable(px, py) {
+  // Check 4 corners of player's feet hitbox
+  const padX = 7;
+  const padTop = 14;
+  const padBot = 30;
+  const points = [
+    [px + padX, py + padTop],
+    [px + TILE - padX, py + padTop],
+    [px + padX, py + padBot],
+    [px + TILE - padX, py + padBot]
+  ];
+  for (const [x, y] of points) {
+    const col = Math.floor(x / TILE);
+    const row = Math.floor(y / TILE);
+    if (row < 0 || row >= MAP_ROWS || col < 0 || col >= MAP_COLS) return false;
+    const t = WORLD_MAP[row][col];
+    if (t === 2 || t === 4 || t === 5 || t === 6) return false;
+  }
+  return true;
+}
+
+let lastZone = '';
+function checkCurrentZone() {
+  const col = Math.floor((gameState.x + 16) / TILE);
+  const row = Math.floor((gameState.y + 16) / TILE);
+  let zone = '';
+  if (row > 13 && col < 18) zone = '🌿 Desa Lembah Tin (Ayat 1–3)';
+  else if (row > 13 && col >= 18) zone = '🌱 Taman Ahsani Taqwim (Ayat 4)';
+  else if (row <= 13 && col < 18) zone = '🕌 Pasar Kejujuran (Ayat 5–6)';
+  else zone = '🏰 Benteng Keadilan (Ayat 7–8)';
+
+  if (zone !== lastZone) {
+    lastZone = zone;
+    showZoneBanner(zone);
+  }
+}
+
+// Ambient floating leaves
+const leaves = Array.from({ length: 18 }, () => ({
+  x: Math.random() * MAP_COLS * TILE,
+  y: Math.random() * MAP_ROWS * TILE,
+  vx: 0.35 + Math.random() * 0.4,
+  vy: 0.25 + Math.random() * 0.35,
+  phase: Math.random() * Math.PI * 2
+}));
+
+function updateGame() {
+  if (!gameState.started || activeDialogue) return;
+
+  let dx = 0;
+  let dy = 0;
+  if (keys['ArrowUp'] || keys['w'] || keys['W']) dy -= 1;
+  if (keys['ArrowDown'] || keys['s'] || keys['S']) dy += 1;
+  if (keys['ArrowLeft'] || keys['a'] || keys['A']) dx -= 1;
+  if (keys['ArrowRight'] || keys['d'] || keys['D']) dx += 1;
+
+  if (dx !== 0 || dy !== 0) {
+    gameState.targetPoint = null;
+    const len = Math.hypot(dx, dy);
+    dx = (dx / len) * gameState.speed;
+    dy = (dy / len) * gameState.speed;
+  } else if (gameState.targetPoint) {
+    const tdx = gameState.targetPoint.x - gameState.x;
+    const tdy = gameState.targetPoint.y - gameState.y;
+    const dist = Math.hypot(tdx, tdy);
+    if (dist < 4) {
+      gameState.targetPoint = null;
+    } else {
+      dx = (tdx / dist) * gameState.speed;
+      dy = (tdy / dist) * gameState.speed;
+    }
+  }
+
+  if (dx !== 0 || dy !== 0) {
+    if (Math.abs(dx) > Math.abs(dy)) gameState.dir = dx < 0 ? 'left' : 'right';
+    else gameState.dir = dy < 0 ? 'up' : 'down';
+
+    if (isTileWalkable(gameState.x + dx, gameState.y)) gameState.x += dx;
+    if (isTileWalkable(gameState.x, gameState.y + dy)) gameState.y += dy;
+
+    gameState.animTimer++;
+    if (gameState.animTimer > 8) {
+      gameState.animTimer = 0;
+      gameState.animFrame = (gameState.animFrame + 1) % 2;
+    }
+    checkCurrentZone();
+  } else {
+    gameState.animFrame = 0;
+  }
+
+  // Smooth Camera Follow
+  const targetCamX = Math.max(0, Math.min(MAP_COLS * TILE - canvas.width, gameState.x + 16 - canvas.width / 2));
+  const targetCamY = Math.max(0, Math.min(MAP_ROWS * TILE - canvas.height, gameState.y + 16 - canvas.height / 2));
+  cameraX += (targetCamX - cameraX) * 0.14;
+  cameraY += (targetCamY - cameraY) * 0.14;
+
+  // Interaction Hint
+  const near = getNearbyInteractable();
+  const hintEl = document.getElementById('interact-hint');
+  if (near) {
+    hintEl.style.display = 'flex';
+    hintEl.textContent = `💬 Tekan [Spasi] atau [A]: ${near.label}`;
+  } else {
+    hintEl.style.display = 'none';
+  }
+}
+
+/* ============================================================================
+   10. RETRO PIXEL-ART TILE & SPRITE DRAWING
+   ============================================================================ */
+function drawTile(t, sx, sy, tick) {
+  if (t === 0) {
+    // Lush Emerald Grass
+    ctx.fillStyle = '#5ab552';
+    ctx.fillRect(sx, sy, TILE, TILE);
+    ctx.fillStyle = '#489e41';
+    ctx.fillRect(sx + 6, sy + 8, 3, 3);
+    ctx.fillRect(sx + 20, sy + 22, 3, 3);
+  } else if (t === 1) {
+    // Cobblestone Path
+    ctx.fillStyle = '#e2c792';
+    ctx.fillRect(sx, sy, TILE, TILE);
+    ctx.fillStyle = '#cfa968';
+    ctx.fillRect(sx + 2, sy + 2, 12, 10);
+    ctx.fillRect(sx + 17, sy + 16, 12, 11);
+  } else if (t === 2) {
+    // Animated Oasis Water
+    ctx.fillStyle = '#2b95d6';
+    ctx.fillRect(sx, sy, TILE, TILE);
+    ctx.fillStyle = '#63c5ff';
+    const wave = Math.sin(tick * 0.06 + sx * 0.1) * 3;
+    ctx.fillRect(sx + 5 + wave, sy + 9, 10, 2);
+    ctx.fillRect(sx + 14 - wave, sy + 22, 11, 2);
+  } else if (t === 3) {
+    // Wooden Bridge
+    ctx.fillStyle = '#2b95d6';
+    ctx.fillRect(sx, sy, TILE, TILE);
+    ctx.fillStyle = '#8c5327';
+    ctx.fillRect(sx, sy + 2, TILE, TILE - 4);
+    ctx.fillStyle = '#5c3314';
+    for (let i = 0; i < TILE; i += 8) {
+      ctx.fillRect(sx + i, sy + 2, 2, TILE - 4);
+    }
+  } else if (t === 4) {
+    // Border Bush / Hedge
+    ctx.fillStyle = '#235e28';
+    ctx.fillRect(sx, sy, TILE, TILE);
+    ctx.fillStyle = '#33853a';
+    ctx.fillRect(sx + 3, sy + 3, TILE - 6, TILE - 8);
+  } else if (t === 5 || t === 6) {
+    // Grass base + Tin Tree (purple figs) or Zaitun Tree (green olives)
+    ctx.fillStyle = '#5ab552';
+    ctx.fillRect(sx, sy, TILE, TILE);
+    // Trunk
+    ctx.fillStyle = '#6e4220';
+    ctx.fillRect(sx + 12, sy + 18, 8, 12);
+    // Canopy
+    ctx.fillStyle = t === 5 ? '#267336' : '#3a8c4a';
+    ctx.beginPath();
+    ctx.arc(sx + 16, sy + 13, 12, 0, Math.PI * 2);
+    ctx.fill();
+    // Fruits (Tin = Purple, Zaitun = Lime Gold)
+    ctx.fillStyle = t === 5 ? '#803999' : '#c6e043';
+    ctx.fillRect(sx + 9, sy + 10, 4, 4);
+    ctx.fillRect(sx + 19, sy + 13, 4, 4);
+    ctx.fillRect(sx + 14, sy + 6, 4, 4);
+  } else if (t === 8) {
+    // Benteng Keadilan Golden Tile
+    ctx.fillStyle = '#f6e096';
+    ctx.fillRect(sx, sy, TILE, TILE);
+    ctx.strokeStyle = '#d69e2e';
+    ctx.strokeRect(sx + 1, sy + 1, TILE - 2, TILE - 2);
+  }
+}
+
+function drawPlayerSprite(sx, sy) {
+  const bob = gameState.animFrame === 1 ? -2 : 0;
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.28)';
+  ctx.beginPath();
+  ctx.ellipse(sx + 16, sy + 29, 9, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Legs
+  ctx.fillStyle = '#2d3748';
+  const stepOffset = gameState.animFrame === 1 ? 2 : 0;
+  ctx.fillRect(sx + 10, sy + 21 - stepOffset, 4, 8);
+  ctx.fillRect(sx + 18, sy + 21 + stepOffset - 2, 4, 8);
+
+  // Tunic / Gamis (Emerald Green)
+  ctx.fillStyle = gameState.character === 'ahmad' ? '#1b7a43' : '#2f9e62';
+  ctx.fillRect(sx + 8, sy + 12 + bob, 16, 11);
+  // Gold trim
+  ctx.fillStyle = '#f4b41a';
+  ctx.fillRect(sx + 15, sy + 12 + bob, 2, 11);
+
+  // Head
+  ctx.fillStyle = '#fbd3a8';
+  ctx.fillRect(sx + 10, sy + 3 + bob, 12, 10);
+
+  if (gameState.character === 'ahmad') {
+    // White Peci
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(sx + 10, sy + 1 + bob, 12, 4);
+  } else {
+    // Hijab (Pastel Emerald/White)
+    ctx.fillStyle = '#e6fffa';
+    ctx.fillRect(sx + 8, sy + 2 + bob, 16, 12);
+    ctx.fillStyle = '#fbd3a8';
+    ctx.fillRect(sx + 11, sy + 5 + bob, 10, 7);
+  }
+
+  // Eyes
+  ctx.fillStyle = '#1a202c';
+  if (gameState.dir !== 'up') {
+    ctx.fillRect(sx + 12, sy + 7 + bob, 2, 2);
+    ctx.fillRect(sx + 18, sy + 7 + bob, 2, 2);
+  }
+}
+
+function getCurrentQuestTarget() {
+  if (gameState.missionStep === 1) {
+    if (!gameState.m1TalkedZaid) return entities.find(e => e.id === 'pak_zaid');
+    if (!gameState.m1TalkedHasan) return entities.find(e => e.id === 'pak_hasan');
+    return entities.find(e => e.id === 'pak_zaid');
+  }
+  if (gameState.missionStep === 2) {
+    const nextItem = entities.find(e => e.activeMission === 2 && !e.collected && e.id !== 'bilal');
+    if (nextItem) return nextItem;
+    return entities.find(e => e.id === 'bilal');
+  }
+  if (gameState.missionStep === 3) {
+    if (!gameState.m3HasCoinPouch) return entities.find(e => e.id === 'coin_pouch');
+    if (!gameState.m3ReturnedCoins) return entities.find(e => e.id === 'pedagang_umar');
+    return entities.find(e => e.id === 'nenek_aminah');
+  }
+  return entities.find(e => e.id === 'penjaga_benteng');
+}
+
+let frameTick = 0;
+function renderGame() {
+  frameTick++;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const startCol = Math.floor(cameraX / TILE);
+  const endCol = Math.min(MAP_COLS - 1, startCol + Math.ceil(canvas.width / TILE) + 1);
+  const startRow = Math.floor(cameraY / TILE);
+  const endRow = Math.min(MAP_ROWS - 1, startRow + Math.ceil(canvas.height / TILE) + 1);
+
+  for (let r = startRow; r <= endRow; r++) {
+    for (let c = startCol; c <= endCol; c++) {
+      drawTile(WORLD_MAP[r][c], Math.floor(c * TILE - cameraX), Math.floor(r * TILE - cameraY), frameTick);
+    }
+  }
+
+  // Draw Zone Landmarks (Mosque Dome in North-West, Golden Arch in North-East)
+  const mosqueX = Math.floor(8 * TILE - cameraX);
+  const mosqueY = Math.floor(3 * TILE - cameraY);
+  ctx.fillStyle = '#fffdf7';
+  ctx.fillRect(mosqueX, mosqueY + 14, 64, 34);
+  ctx.fillStyle = '#1b7a43';
+  ctx.beginPath();
+  ctx.arc(mosqueX + 32, mosqueY + 14, 22, Math.PI, 0);
+  ctx.fill();
+  ctx.fillStyle = '#f4b41a';
+  ctx.fillRect(mosqueX + 30, mosqueY - 12, 4, 8);
+
+  // Draw Click Target Ring
+  if (gameState.targetPoint) {
+    const tx = gameState.targetPoint.x + 16 - cameraX;
+    const ty = gameState.targetPoint.y + 16 - cameraY;
+    ctx.strokeStyle = '#ffe07d';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(tx, ty, 8 + Math.sin(frameTick * 0.2) * 3, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // Draw Entities
+  const questTarget = getCurrentQuestTarget();
+  for (const ent of entities) {
+    if (ent.collected) continue;
+    const sx = Math.floor(ent.x - cameraX);
+    const sy = Math.floor(ent.y - cameraY);
+    if (sx < -40 || sx > canvas.width + 40 || sy < -40 || sy > canvas.height + 40) continue;
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(sx + 16, sy + 28, 10, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Icon
+    ctx.font = '24px Fredoka, sans-serif';
+    ctx.textAlign = 'center';
+    const floatY = ent.type !== 'npc' ? Math.sin(frameTick * 0.1) * 3 : 0;
+    ctx.fillText(ent.icon, sx + 16, sy + 24 + floatY);
+
+    // Name tag for NPCs
+    if (ent.type === 'npc') {
+      ctx.font = 'bold 10px Fredoka, sans-serif';
+      const w = ctx.measureText(ent.label).width + 10;
+      ctx.fillStyle = 'rgba(20, 12, 6, 0.78)';
+      ctx.fillRect(sx + 16 - w / 2, sy - 10, w, 14);
+      ctx.fillStyle = '#ffe07d';
+      ctx.fillText(ent.label, sx + 16, sy);
+    }
+
+    // Quest Marker "!" above active objective
+    if (questTarget && questTarget.id === ent.id) {
+      const bounce = Math.sin(frameTick * 0.15) * 4;
+      ctx.fillStyle = '#f4b41a';
+      ctx.beginPath();
+      ctx.arc(sx + 16, sy - 20 + bounce, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#2c1e12';
+      ctx.font = 'bold 12px Fredoka, sans-serif';
+      ctx.fillText('!', sx + 16, sy - 16 + bounce);
+    }
+  }
+
+  // Draw Player
+  drawPlayerSprite(Math.floor(gameState.x - cameraX), Math.floor(gameState.y - cameraY));
+
+  // Ambient Drifting Golden Leaves
+  ctx.fillStyle = 'rgba(255, 224, 125, 0.7)';
+  for (const lf of leaves) {
+    lf.x += lf.vx;
+    lf.y += lf.vy + Math.sin(frameTick * 0.05 + lf.phase) * 0.25;
+    if (lf.x > MAP_COLS * TILE) lf.x = 0;
+    if (lf.y > MAP_ROWS * TILE) lf.y = 0;
+    ctx.fillRect(Math.floor(lf.x - cameraX), Math.floor(lf.y - cameraY), 3, 3);
+  }
+
+  // On-Screen Directional Quest Compass Arrow
+  if (questTarget && gameState.started) {
+    const dx = questTarget.x - gameState.x;
+    const dy = questTarget.y - gameState.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist > 60) {
+      const angle = Math.atan2(dy, dx);
+      const cx = canvas.width / 2 + Math.cos(angle) * 145;
+      const cy = canvas.height / 2 + Math.sin(angle) * 110;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+      ctx.fillStyle = '#f4b41a';
+      ctx.strokeStyle = '#3b2313';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(14, 0);
+      ctx.lineTo(-8, -8);
+      ctx.lineTo(-4, 0);
+      ctx.lineTo(-8, 8);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+}
+
+function gameLoop() {
+  updateGame();
+  renderGame();
+  requestAnimationFrame(gameLoop);
+}
+
+// Preload voices & start loop
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+}
+updateHUD();
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>
